@@ -2,80 +2,126 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { FaUserCircle } from 'react-icons/fa'
-import logo1 from './../../../public/logo1.png' // Import logo
+import { FaShoppingCart } from 'react-icons/fa'
+import { FiSearch, FiHeart } from 'react-icons/fi'
+import logo2 from './../../../public/logo2.png'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [cartCount, setCartCount] = useState(0)
 
   const toggleMenu = () => setIsOpen(!isOpen)
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen)
 
   return (
-    <nav className="bg-gradient-to-r from-black to-gray-800 text-white fixed w-full z-50 shadow-md">
-      <div className="max-w-screen-xl mx-auto px-6 py-4 flex justify-between items-center">
+    <nav className="w-full fixed top-0 z-50 bg-white shadow-md">
+      {/* Top Banner */}
+      <div className="w-full bg-black text-white text-center py-2 text-sm">
+        Wedding Sale For All Jewellery Products – OFF 50%!{' '}
+        <Link href="/products" className="font-bold underline">
+          Shop Now
+        </Link>
+      </div>
+
+      {/* Main Navbar */}
+      <div className="max-w-screen-xl px-6 flex justify-between items-center">
         {/* Logo */}
-        <Link href="/" className="flex items-center">
-          <Image src={logo1} alt="Logo" width={56} height={56} className="h-14 w-14" priority />
+        <Link href="/">
+          <Image src={logo2} alt="Logo" width={74} height={12} priority />
         </Link>
 
-        {/* Hamburger Icon */}
-        <button 
-          className="lg:hidden text-white p-2 focus:outline-none" 
-          onClick={toggleMenu} 
-          aria-expanded={isOpen} 
-          aria-label="Toggle navigation"
-        >
-          <span className="block w-6 h-0.5 bg-white mb-1"></span>
-          <span className="block w-6 h-0.5 bg-white mb-1"></span>
-          <span className="block w-6 h-0.5 bg-white"></span>
-        </button>
+        {/* Desktop Links */}
+        <ul className="hidden lg:flex space-x-8 text-black font-medium">
+          <li>
+            <Link href="/products" className="hover:border-b-2 hover:border-black pb-1 transition">
+              Products
+            </Link>
+          </li>
+          <li>
+            <Link href="/about" className="hover:border-b-2 hover:border-black pb-1 transition">
+              About
+            </Link>
+          </li>
+          <li>
+            <Link href="/contact" className="hover:border-b-2 hover:border-black pb-1 transition">
+              Contact
+            </Link>
+          </li>
+          <li>
+            <Link href="/register" className="hover:border-b-2 hover:border-black pb-1 transition">
+              Sign Up
+            </Link>
+          </li>
+        </ul>
 
-        {/* Navbar Links */}
-        <div className={`lg:flex lg:items-center lg:space-x-8 ${isOpen ? 'block' : 'hidden'} lg:block`}>
-          <ul className="flex flex-col lg:flex-row lg:space-x-8 items-center">
-            {['Home', 'About', 'Services', 'Contact'].map((item) => (
-              <li key={item}>
-                <Link 
-                  href={`/${item.toLowerCase()}`} 
-                  className="text-lg hover:text-yellow-400 transition duration-300"
-                >
-                  {item}
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          {/* Avatar & Dropdown */}
-          <div className="relative mt-4 lg:mt-0">
-            <button 
-              onClick={toggleDropdown} 
-              className="text-white p-2 rounded-full focus:outline-none"
-            >
-              <FaUserCircle className="text-3xl" />
-            </button>
-
-            {/* Dropdown Menu */}
-            {dropdownOpen && (
-              <div className="absolute right-0 bg-gray-800 rounded-lg shadow-lg mt-2 w-48">
-                <ul className="text-white py-2">
-                  {['Login', 'Register'].map((option) => (
-                    <li key={option}>
-                      <Link 
-                        href={`/${option.toLowerCase()}`} 
-                        className="block px-4 py-2 text-lg hover:bg-yellow-400 transition duration-300"
-                      >
-                        {option}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+        {/* Desktop Search, Wishlist, Cart Icons */}
+        <div className="hidden lg:flex items-center space-x-6">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="What are you looking for?"
+              className="bg-gray-100 px-4 py-2 rounded-md text-sm w-64 outline-none"
+            />
+            <FiSearch className="absolute top-3 right-4 text-gray-500" />
           </div>
+          <FiHeart className="text-2xl cursor-pointer" />
+          <Link href="/cart" className="relative">
+            <FaShoppingCart className="text-2xl cursor-pointer" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+        </div>
+
+        {/* Mobile Icons & Hamburger */}
+        <div className="lg:hidden flex items-center space-x-4">
+          <FiHeart className="text-2xl cursor-pointer" />
+          <Link href="/cart" className="relative">
+            <FaShoppingCart className="text-2xl cursor-pointer" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+
+          {/* Mobile Menu Button */}
+          <button className="text-black p-2 focus:outline-none" onClick={toggleMenu}>
+            <span className="block w-6 h-0.5 bg-black mb-1"></span>
+            <span className="block w-6 h-0.5 bg-black mb-1"></span>
+            <span className="block w-6 h-0.5 bg-black"></span>
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="lg:hidden bg-white shadow-md absolute w-full left-0 top-full">
+          <ul className="flex flex-col text-center text-black font-medium py-4 space-y-3">
+            <li>
+              <Link href="/products" className="block py-2 hover:bg-gray-100" onClick={() => setIsOpen(false)}>
+                Products
+              </Link>
+            </li>
+            <li>
+              <Link href="/about" className="block py-2 hover:bg-gray-100" onClick={() => setIsOpen(false)}>
+                About
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="block py-2 hover:bg-gray-100" onClick={() => setIsOpen(false)}>
+                Contact
+              </Link>
+            </li>
+            <li>
+              <Link href="/register" className="block py-2 hover:bg-gray-100" onClick={() => setIsOpen(false)}>
+                Sign Up
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
     </nav>
   )
 }
