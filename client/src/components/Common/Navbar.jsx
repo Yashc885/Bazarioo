@@ -1,16 +1,38 @@
 'use client'
-import { useState } from 'react'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { FaShoppingCart } from 'react-icons/fa'
 import { FiSearch, FiHeart } from 'react-icons/fi'
+import { BiUser, BiLogOut } from 'react-icons/bi'
+import { AiOutlineShopping } from 'react-icons/ai'
+import { MdFavorite } from 'react-icons/md'
+import Cookies from 'js-cookie'
 import logo2 from './../../../public/logo2.png'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const [cartCount, setCartCount] = useState(0)
+  const [cartCount, setCartCount] = useState(2) // Example cart count
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'
+    setIsLoggedIn(loggedInStatus)
+  }, [])
 
   const toggleMenu = () => setIsOpen(!isOpen)
+  const toggleDropdown = () => setDropdownOpen(!dropdownOpen)
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn')
+    localStorage.removeItem('userId')
+    Cookies.remove('authToken') // Remove authentication cookie
+    setIsLoggedIn(false)
+    setDropdownOpen(false)
+    window.location.reload() // Refresh to update UI
+  }
 
   return (
     <nav className="w-full fixed top-0 z-50 bg-white shadow-md">
@@ -53,8 +75,8 @@ const Navbar = () => {
           </li>
         </ul>
 
-        {/* Desktop Search, Wishlist, Cart Icons */}
-        <div className="hidden lg:flex items-center space-x-6">
+        {/* Desktop Icons & User Dropdown */}
+        <div className="hidden lg:flex items-center space-x-6 relative">
           <div className="relative">
             <input
               type="text"
@@ -63,7 +85,9 @@ const Navbar = () => {
             />
             <FiSearch className="absolute top-3 right-4 text-gray-500" />
           </div>
+          <Link href="/wishlist">
           <FiHeart className="text-2xl cursor-pointer" />
+          </Link>
           <Link href="/cart" className="relative">
             <FaShoppingCart className="text-2xl cursor-pointer" />
             {cartCount > 0 && (
@@ -72,6 +96,36 @@ const Navbar = () => {
               </span>
             )}
           </Link>
+
+          {/* User Icon & Dropdown (only if logged in) */}
+          {isLoggedIn && (
+            <div className="relative">
+              <button onClick={toggleDropdown} className="relative">
+                <BiUser className="text-2xl cursor-pointer text-white bg-red-500 rounded-full p-1" />
+              </button>
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-gradient-to-b from-black/30 to-black/70 backdrop-blur-2xl shadow-lg rounded-lg overflow-hidden z-50">
+                  <ul className="text-white text-sm">
+                    <li className="px-4 py-2 flex items-center hover:text-black">
+                      <AiOutlineShopping className="mr-2" /> My Orders
+                    </li>
+                    <li className="px-4 py-2 flex items-center hover:text-black">
+                      <FaShoppingCart className="mr-2" /> My Cart
+                    </li>
+                    <li className="px-4 py-2 flex items-center hover:text-black">
+                      <MdFavorite className="mr-2" /> My Liked
+                    </li>
+                    <li
+                      className="px-4 py-2 flex items-center hover:text-red-600 cursor-pointer text-red-400"
+                      onClick={handleLogout}
+                    >
+                      <BiLogOut className="mr-2" /> Logout
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Mobile Icons & Hamburger */}
@@ -86,6 +140,36 @@ const Navbar = () => {
             )}
           </Link>
 
+          {/* User Icon & Dropdown (Mobile) */}
+          {isLoggedIn && (
+            <div className="relative">
+              <button onClick={toggleDropdown} className="relative">
+                <BiUser className="text-2xl cursor-pointer text-white bg-red-500 rounded-full p-1" />
+              </button>
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-40 bg-gradient-to-b from-black/30 to-black/70 shadow-lg rounded-lg overflow-hidden z-50">
+                  <ul className="text-white text-sm">
+                    <li className="px-4 py-2 flex items-center hover:text-black">
+                      <AiOutlineShopping className="mr-2" /> My Orders
+                    </li>
+                    <li className="px-4 py-2 flex items-center hover:text-black">
+                      <FaShoppingCart className="mr-2" /> My Cart
+                    </li>
+                    <li className="px-4 py-2 flex items-center hover:text-black">
+                      <MdFavorite className="mr-2" /> My Liked
+                    </li>
+                    <li
+                      className="px-4 py-2 flex items-center hover:text-red-600 cursor-pointer text-red-400"
+                      onClick={handleLogout}
+                    >
+                      <BiLogOut className="mr-2" /> Logout
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Mobile Menu Button */}
           <button className="text-black p-2 focus:outline-none" onClick={toggleMenu}>
             <span className="block w-6 h-0.5 bg-black mb-1"></span>
@@ -94,34 +178,6 @@ const Navbar = () => {
           </button>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="lg:hidden bg-white shadow-md absolute w-full left-0 top-full">
-          <ul className="flex flex-col text-center text-black font-medium py-4 space-y-3">
-            <li>
-              <Link href="/products" className="block py-2 hover:bg-gray-100" onClick={() => setIsOpen(false)}>
-                Products
-              </Link>
-            </li>
-            <li>
-              <Link href="/about" className="block py-2 hover:bg-gray-100" onClick={() => setIsOpen(false)}>
-                About
-              </Link>
-            </li>
-            <li>
-              <Link href="/contact" className="block py-2 hover:bg-gray-100" onClick={() => setIsOpen(false)}>
-                Contact
-              </Link>
-            </li>
-            <li>
-              <Link href="/register" className="block py-2 hover:bg-gray-100" onClick={() => setIsOpen(false)}>
-                Sign Up
-              </Link>
-            </li>
-          </ul>
-        </div>
-      )}
     </nav>
   )
 }

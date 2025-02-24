@@ -2,3 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    font-family: 'Merriweather', serif;
+    overflow-x: hidden; 
+  }
+  
+  .container {
+    width: 100%; 
+    max-width: 1200px;
+    margin: 0 auto; 
+  }
+  
+ html{
+  scroll-behavior: smooth;
+ }
+
+ ::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  /* background: #f1f1f1; */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: red;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: red;
+}
