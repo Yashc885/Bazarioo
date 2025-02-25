@@ -1,15 +1,11 @@
-'use client';
+"use client";
 import { useState } from "react";
+import Link from "next/link";
 import { FaChevronRight } from "react-icons/fa";
 
 const categories = [
-  "Jewelleries",
-  "Electronics & Watches",
-  "Home & Lifestyle",
-  "Clothing",
-  "Games & Sports",
-  "Health & Beauty",
-  "Others",
+   "Clothing", "Beauty", "Watches ", "Home", "Jewelleries",
+  "Festive", "Spiritual", 
 ];
 
 const Sidebar = () => {
@@ -25,12 +21,10 @@ const Sidebar = () => {
             onMouseEnter={() => setActive(index)}
             onMouseLeave={() => setActive(null)}
           >
-            <span className="hover:border-b-2 hover:border-black">{category}</span>
-            <FaChevronRight
-              className={`text-xs transition ${
-                active === index ? "text-black" : "text-gray-500"
-              }`}
-            />
+            <Link href={`/products?category=${encodeURIComponent(category)}`} className="w-full flex justify-between items-center">
+              <span className="hover:border-b-2 hover:border-black">{category}</span>
+              <FaChevronRight className={`text-xs transition ${active === index ? "text-black" : "text-gray-500"}`} />
+            </Link>
           </li>
         ))}
       </ul>

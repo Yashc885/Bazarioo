@@ -79,9 +79,11 @@ const Cart = () => {
             <span>Total:</span>
             <span>${subtotal}</span>
           </div>
+        <Link href="/checkout">
           <button className="w-full bg-red-500 text-white px-6 py-3 mt-4 rounded-lg hover:bg-red-600 transition text-lg">
             Proceed to Checkout
           </button>
+        </Link>
         </div>
       </div>
     </div>

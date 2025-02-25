@@ -5,19 +5,34 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import {
+  Shirt,
+  Sparkles,
+  Watch,
+  Home,
+  Headphones,
+  ShoppingBag,
+  Gamepad2,
+  Gift,
+  Star,
+  Gem,
+  ShoppingCart,
+} from "lucide-react";
 
 // Category Data
 const categories = [
-  { name: "Clothing", icon: "👕" },
-  { name: "Beauty", icon: "💄" },
-  { name: "Watches", icon: "⌚" },
-  { name: "Home", icon: "🏠" },
-  { name: "Headphones", icon: "🎧" },
-  { name: "Shoes", icon: "👟" },
-  { name: "Gaming", icon: "🎮" },
-  { name: "Smartphones", icon: "📱" },
-  { name: "Laptops", icon: "💻" },
-  { name: "Fitness", icon: "🏋️" },
+  { name: "All", icon: ShoppingCart },
+  { name: "Clothing", icon: Shirt },
+  { name: "Beauty", icon: Sparkles },
+  { name: "Watches", icon: Watch },
+  { name: "Home", icon: Home },
+  { name: "Headphones", icon: Headphones },
+  { name: "Jewelleries", icon: Gem },
+  { name: "Shoes", icon: ShoppingBag },
+  { name: "Games", icon: Gamepad2 },
+  { name: "Festive", icon: Gift },
+  { name: "Spiritual", icon: Star },
+  { name: "Others", icon: ShoppingCart },
 ];
 
 const Category = () => {
@@ -67,18 +82,21 @@ const Category = () => {
               <Link href={`/products?category=${category.name}`} passHref>
                 <div
                   className={`border p-6 rounded-lg cursor-pointer flex flex-col items-center text-center transition-all ${
-                    active === category.name ? "bg-red-500 text-white" : ""
+                    active === category.name ? "bg-red-500 text-white" : "bg-gray-100"
                   }`}
                   onClick={() => setActive(category.name)}
                 >
-                  <span className="text-3xl">{category.icon}</span>
-                  <p className="mt-2 text-sm lg:text-lg font-medium">{category.name}</p>
+                  <category.icon className={`w-8 h-8 ${active === category.name ? "text-white" : "text-gray-500"}`} />
+                  <p className={`mt-2 text-sm lg:text-lg font-medium ${active === category.name ? "text-white" : "text-gray-700"}`}>
+                    {category.name}
+                  </p>
                 </div>
               </Link>
             </SwiperSlide>
           ))}
         </Swiper>
       </div>
+
       <div className="flex flex-col items-center mt-10">
         <div className="w-full max-w-5xl border-t border-gray-300 mt-12 lg:mt-16"></div>
       </div>
