@@ -1,11 +1,11 @@
 import Navbar from './../../../components/Admin/Common/Navbar.jsx';
-import Order from './../../../components/Admin/Order/Order.jsx';
+import UpdateProduct from './../../../components/Admin/UpdateProduct/UpdateProduct.jsx';
 export default function Home() {
   return (
     <div className=""> 
      <Navbar />
      <div className = "mt-24">
-      <Order />
+      <UpdateProduct />
       </div> 
     </div>
   );

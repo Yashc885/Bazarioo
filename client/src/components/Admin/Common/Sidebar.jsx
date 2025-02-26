@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Correct import for Next.js 13+
+import { useRouter } from "next/navigation";
 import { FiHome, FiShoppingCart, FiList, FiChevronDown } from "react-icons/fi";
 import { MdCategory } from "react-icons/md";
 
@@ -15,17 +15,27 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [selectedMenu, setSelectedMenu] = useState(null);
   const router = useRouter();
 
-  const handleMenuClick = (menu) => {
-    setSelectedMenu(menu);
-    if (menu !== "products") {
-      setShowCategories(false);
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (isOpen && !event.target.closest("#sidebar")) {
+        toggleSidebar();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("click", handleOutsideClick);
+    } else {
+      document.removeEventListener("click", handleOutsideClick);
     }
-  };
+
+    return () => document.removeEventListener("click", handleOutsideClick);
+  }, [isOpen]);
 
   return (
     <aside
-      className={`bg-white min-h-screen w-64 fixed left-0 top-0 transition-all duration-300 shadow-lg 
-      ${isOpen ? "translate-x-0" : "-translate-x-64"} md:translate-x-0`}
+      id="sidebar"
+      className={`bg-white min-h-screen w-64 fixed top-0 left-0 transition-transform duration-300 shadow-lg z-50 
+      ${isOpen ? "translate-x-0" : "-translate-x-64"} md:translate-x-0 md:block`}
     >
       {/* Sidebar Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b">
@@ -38,44 +48,28 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       {/* Menu Items */}
       <nav className="mt-6">
         <ul>
-          <li 
-            className="px-6 py-3 flex items-center gap-3 hover:bg-red-500 hover:text-white cursor-pointer"
-            onClick={() => handleMenuClick("dashboard")}
-          >
+          <li className="px-6 py-3 flex items-center gap-3 hover:bg-red-500 hover:text-white cursor-pointer">
             <Link href="/superuser/dashboard" className="flex items-center gap-3 w-full">
               <FiHome className="text-lg" /> Dashboard
             </Link>
           </li>
-          <li 
+          <li
             className="px-6 py-3 flex items-center gap-3 hover:bg-red-500 hover:text-white cursor-pointer"
-            onClick={() => { handleMenuClick("products"); setShowCategories(!showCategories); }}
+            onClick={() => setShowCategories(!showCategories)}
           >
-            <Link href="/superuser/product" className="flex items-center gap-3 w-full">
-              <FiShoppingCart className="text-lg" /> All Products
-            </Link>
-            <FiChevronDown className="ml-auto cursor-pointer" onClick={() => setShowCategories(!showCategories)} />
+            <FiShoppingCart className="text-lg" /> Products
+            <FiChevronDown className="ml-auto cursor-pointer" />
           </li>
-          <li 
-            className="px-6 py-3 flex items-center gap-3 hover:bg-red-500 hover:text-white cursor-pointer"
-            onClick={() => handleMenuClick("orders")}
-          >
-            <Link href="/superuser/order" className="flex items-center gap-3 w-full">
-              <FiList className="text-lg" /> Order List
-            </Link>
-          </li>
-          
-          {/* Categories Section */}
-          {showCategories && selectedMenu === "products" && (
+
+          {/* Categories */}
+          {showCategories && (
             <>
               <li className="border-t border-gray-300 px-6 py-3 flex items-center gap-3 text-gray-600 cursor-pointer">
                 <MdCategory className="text-lg text-black" /> Categories
               </li>
               <ul className="pl-10">
                 {categories.map((category, index) => (
-                  <li 
-                    key={index} 
-                    className="px-6 py-2 hover:bg-red-500 hover:text-white cursor-pointer"
-                  >
+                  <li key={index} className="px-6 py-2 hover:bg-red-500 hover:text-white cursor-pointer">
                     <Link href={`/superuser/product?category=${category}`}>
                       {category}
                     </Link>
@@ -84,6 +78,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               </ul>
             </>
           )}
+
+          <li className="px-6 py-3 flex items-center gap-3 hover:bg-red-500 hover:text-white cursor-pointer">
+            <Link href="/superuser/order" className="flex items-center gap-3 w-full">
+              <FiList className="text-lg" /> Order List
+            </Link>
+          </li>
         </ul>
       </nav>
     </aside>
