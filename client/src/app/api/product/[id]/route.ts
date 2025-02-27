@@ -3,14 +3,13 @@ import dbConnect from "@/database/Config";
 import Product from "@/models/Product";
 
 export async function GET(
-  req: Request,
-  context: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> } // 👈 Awaitable params
 ) {
   await dbConnect(); // Ensure DB connection
 
   try {
-    const param = await context.params; // Await the params
-    const id = await param.id; // Await the id extraction
+    const { id } = await params; // ✅ Awaiting params before accessing id
 
     if (!id) {
       return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
