@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
 import connect from "./../../../database/Config"; 
 import Cart from "./../../../models/Cart";
@@ -24,7 +25,8 @@ export async function POST(req: NextRequest) {
       const status = product ? "available" : "not available";
 
       // Check if product already exists in cart
-      const productIndex = cart.products.findIndex((p) => p.product.toString() === productId);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const productIndex = cart.products.findIndex((p: { product: any }) => p.product.toString() === productId);
       if (productIndex > -1) {
         cart.products[productIndex].quantity += quantity;
         cart.products[productIndex].status = status;
@@ -72,7 +74,7 @@ export async function PUT(req: NextRequest) {
     if (!cart) return NextResponse.json({ message: "Cart not found" }, { status: 404 });
 
     for (const { productId, quantity } of products) {
-      const productIndex = cart.products.findIndex((p) => p.product.toString() === productId);
+      const productIndex = cart.products.findIndex((p: { product: any }) => p.product.toString() === productId);
       if (productIndex === -1) continue;
       cart.products[productIndex].quantity = quantity;
     }
@@ -98,7 +100,7 @@ export async function DELETE(req: NextRequest) {
     const cart = await Cart.findOne({ user: userId });
     if (!cart) return NextResponse.json({ message: "Cart not found" }, { status: 404 });
     
-    cart.products = cart.products.filter((p) => !productIds.includes(p.product.toString()));
+    cart.products = cart.products.filter((p: { product: any }) => !productIds.includes(p.product.toString()));
     await cart.save();
     return NextResponse.json({ message: "Products removed from cart", cart });
   } catch (error) {
