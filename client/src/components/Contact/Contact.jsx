@@ -4,37 +4,36 @@ import { FiPhone, FiMail } from "react-icons/fi"; // Importing icons
 
 const Contact = () => {
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-16 py-8 lg:py-16">
+    <div className="max-w-7xl mx-auto px-4 md:px-16 py-6 lg:py-8">
       {/* Breadcrumb - Aligned Left */}
-      <nav className="text-gray-500 text-sm mb-6">
+      <nav className="text-gray-500 text-sm ">
         <Link href="/" className="hover:text-black">Home</Link> /
         <span className="text-black font-semibold"> Contact</span>
       </nav>
 
       {/* Contact Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-6 lg:py-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-6 lg:py-8">
         {/* Left Section - Contact Info */}
         <div className="bg-white shadow-md rounded-lg p-6 border">
           {/* Call Us */}
           <div className="flex items-center mb-6">
-            <div className="w-12 h-12 bg-red-500 text-white flex items-center justify-center rounded-full">
-              <FiPhone size={24} />
-            </div>
             <div className="ml-4">
               <h2 className="font-semibold text-lg py-2">Call To Us</h2>
               <p className="text-gray-500 text-sm mt-1 py-2">
                 We are available 24/7, 7 days a week.
               </p>
-              <p className="font-medium pb-2">Phone: +8801611122222</p>
+              <div className="flex items-center">
+                  <div className="w-10 h-10 bg-red-500 text-white flex items-center justify-center rounded-full">
+                    <FiPhone size={18} />
+                  </div>
+                  <p className="font-medium ml-3">+8801611122222</p>
+                </div>
             </div>
           </div>
           <hr className="border-gray-300" />
 
           {/* Write to Us */}
           <div className="flex items-center mt-6">
-            <div className="w-12 h-12 bg-red-500 text-white flex items-center justify-center rounded-full">
-              <FiMail size={24} />
-            </div>
             <div className="ml-4">
               <h2 className="font-semibold text-lg py-2">Write To Us</h2>
               <p className="text-gray-500 text-sm mt-1">
