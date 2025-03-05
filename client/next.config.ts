@@ -12,6 +12,11 @@ const nextConfig = {
         hostname: "static.nike.com",
         pathname: "/**", // Allow all images from this domain
       },
+      {
+        protocol: "https",
+        hostname: "images.thenorthface.com",
+        pathname: "/**", // Allow all images from this domain
+      },
     ],
   },
 };
