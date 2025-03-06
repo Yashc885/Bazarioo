@@ -18,8 +18,21 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
-    const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'
-    setIsLoggedIn(loggedInStatus)
+    // Function to check login state
+    const checkLoginStatus = () => {
+      const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'
+      setIsLoggedIn(loggedInStatus)
+    }
+
+    // Initial check
+    checkLoginStatus()
+
+    // Listen for localStorage changes
+    window.addEventListener('storage', checkLoginStatus)
+
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus)
+    }
   }, [])
 
   const toggleMenu = () => setIsOpen(!isOpen)
@@ -45,7 +58,7 @@ const Navbar = () => {
       </div>
 
       {/* Main Navbar */}
-      <div className="max-w-screen-xl px-6 flex justify-between items-center">
+      <div className="max-w-screen-xl mx-auto px-6 flex justify-between items-center py-4">
         {/* Logo */}
         <Link href="/">
           <Image src={logo2} alt="Logo" width={74} height={12} priority />
@@ -68,11 +81,13 @@ const Navbar = () => {
               Contact
             </Link>
           </li>
-          <li>
-            <Link href="/register" className="hover:border-b-2 hover:border-black pb-1 transition">
-              Sign Up
-            </Link>
-          </li>
+          {!isLoggedIn && (
+            <li>
+              <Link href="/register" className="hover:border-b-2 hover:border-black pb-1 transition">
+                Sign Up
+              </Link>
+            </li>
+          )}
         </ul>
 
         {/* Desktop Icons & User Dropdown */}
@@ -86,7 +101,7 @@ const Navbar = () => {
             <FiSearch className="absolute top-3 right-4 text-gray-500" />
           </div>
           <Link href="/wishlist">
-          <FiHeart className="text-2xl cursor-pointer" />
+            <FiHeart className="text-2xl cursor-pointer" />
           </Link>
           <Link href="/cart" className="relative">
             <FaShoppingCart className="text-2xl cursor-pointer" />
@@ -97,7 +112,7 @@ const Navbar = () => {
             )}
           </Link>
 
-          {/* User Icon & Dropdown (only if logged in) */}
+          {/* User Icon & Dropdown */}
           {isLoggedIn && (
             <div className="relative">
               <button onClick={toggleDropdown} className="relative">
@@ -128,7 +143,7 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Icons & Hamburger */}
+        {/* Mobile Menu */}
         <div className="lg:hidden flex items-center space-x-4">
           <FiHeart className="text-2xl cursor-pointer" />
           <Link href="/cart" className="relative">
@@ -140,7 +155,7 @@ const Navbar = () => {
             )}
           </Link>
 
-          {/* User Icon & Dropdown (Mobile) */}
+          {/* User Icon & Dropdown */}
           {isLoggedIn && (
             <div className="relative">
               <button onClick={toggleDropdown} className="relative">
@@ -169,13 +184,6 @@ const Navbar = () => {
               )}
             </div>
           )}
-
-          {/* Mobile Menu Button */}
-          <button className="text-black p-2 focus:outline-none" onClick={toggleMenu}>
-            <span className="block w-6 h-0.5 bg-black mb-1"></span>
-            <span className="block w-6 h-0.5 bg-black mb-1"></span>
-            <span className="block w-6 h-0.5 bg-black"></span>
-          </button>
         </div>
       </div>
     </nav>
