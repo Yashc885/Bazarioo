@@ -23,6 +23,8 @@ const Navbar = () => {
       {/* Desktop Menu */}
       <div className="hidden md:flex items-center gap-6">
         <Link href="/superuser/dashboard" className="text-gray-700 font-semibold hover:text-red-500">Dashboard</Link>
+        <Link href="/superuser/today" className="text-gray-700 font-semibold hover:text-red-500">Todays</Link>
+        <Link href="/superuser/grev" className="text-gray-700 font-semibold hover:text-red-500">Greviance</Link>
         <div className="relative">
           <button
             onClick={() => setShowCategories(!showCategories)}
