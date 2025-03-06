@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { ShoppingCart, Truck, Globe, BadgeCheck, RotateCw } from "lucide-react";
+import { Truck, Globe, BadgeCheck, RotateCw } from "lucide-react";
 import Link from "next/link";
+import CartButton2 from "./../ui/CartButton2";
 
 const fallbackImage = "/images/default-product.jpg";
 
@@ -84,14 +85,10 @@ const ProductDetails = ({ productId }) => {
 
             {/* Total Price Box */}
             <div className="p-2 border rounded-md bg-gray-100 w-fit">
-              <strong>Total Price:</strong> ${Number(product.offerPrice * quantity).toFixed(2)}
+              <strong>Total Price:</strong> ₹{Number(product.offerPrice * quantity).toFixed(2)}
             </div>
             <div className="mt-4">
-              <Link href="/cart">
-                <button className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition flex items-center gap-2">
-                  <ShoppingCart size={18} /> Add to Cart
-                </button>
-              </Link>
+              <CartButton2 product={product} />
             </div>
           </div>
 

@@ -1,22 +1,41 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import Link from "next/link";
 import Image from "next/image";
-import mobile from "@/assets/Today/mobile.jpg";
-
-const products = [
-  { id: 1, image: mobile, name: "Breed Dry Dog Food", price: "$100" },
-  { id: 2, image: mobile, name: "CANON EOS DSLR Camera", price: "$360" },
-  { id: 3, image: mobile, name: "ASUS FHD Gaming Laptop", price: "$700" },
-  { id: 4, image: mobile, name: "Curology Product Set", price: "$500" },
-  { id: 5, image: mobile, name: "Kids Electric Car", price: "$960" },
-  { id: 6, image: mobile, name: "Jr. Zoom Soccer Cleats", price: "$1160" },
-];
+import axios from "axios";
+import CartButton from "./../ui/CartButton";
 
 export default function HomeProduct() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("/api/product");
+        const data = response.data;
+        if (data && Array.isArray(data.products)) {
+          const limitedProducts = data.products.slice(0, 20); // Max 20 products
+          setProducts(limitedProducts);
+        } else {
+          setProducts([]); // Fallback for unexpected response
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setProducts([]);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  // Split products into two unique sets for each Swiper
+  const halfLength = Math.ceil(products.length / 2);
+  const firstHalf = products.slice(0, halfLength);
+  const secondHalf = products.slice(halfLength, 20);
+
   return (
     <div className="w-full px-4 md:px-8 lg:px-16 py-8">
       {/* Section Header */}
@@ -39,11 +58,11 @@ export default function HomeProduct() {
           1024: { slidesPerView: 4 },
         }}
         loop={true}
-        autoplay={{ delay: 2000, disableOnInteraction: false }}
+        autoplay={{ delay: 1500, disableOnInteraction: false }} // Faster speed
         className="mb-8"
       >
-        {products.map((product) => (
-          <SwiperSlide key={product.id}>
+        {firstHalf.map((product) => (
+          <SwiperSlide key={product._id}>
             <ProductCard product={product} />
           </SwiperSlide>
         ))}
@@ -60,10 +79,14 @@ export default function HomeProduct() {
           1024: { slidesPerView: 4 },
         }}
         loop={true}
-        autoplay={{ delay: 2000, disableOnInteraction: false, reverseDirection: true }}
+        autoplay={{
+          delay: 1200, // Even faster for better effect
+          disableOnInteraction: false,
+          reverseDirection: true,
+        }}
       >
-        {products.map((product) => (
-          <SwiperSlide key={product.id}>
+        {secondHalf.map((product) => (
+          <SwiperSlide key={product._id}>
             <ProductCard product={product} />
           </SwiperSlide>
         ))}
@@ -71,7 +94,7 @@ export default function HomeProduct() {
 
       {/* View All Products Button */}
       <div className="flex justify-center mt-10">
-        <Link href="/offers">
+        <Link href="/products">
           <button className="bg-red-500 text-white py-2 px-6 rounded-md text-lg font-semibold hover:bg-red-600 transition">
             View All Products
           </button>
@@ -82,22 +105,21 @@ export default function HomeProduct() {
   );
 }
 
-// Product Card Component
+// Product Card Component with Add to Cart functionality
 const ProductCard = ({ product }) => {
   return (
-    <div className="p-4 border rounded-lg shadow-md bg-white hover:shadow-xl transition-all">
+    <div className="p-4 border rounded-lg shadow-md bg-white hover:shadow-xl transition-all w-[250px] h-[320px] flex flex-col justify-between">
       <Image
-        src={product.image}
-        alt={product.name}
-        width={200}
-        height={200}
-        className="w-full h-40 object-cover mb-3 rounded-md"
+        src={product.images[0]}
+        alt={product.title}
+        width={220}
+        height={220}
+        className="w-full h-[180px] object-cover mb-3 rounded-md"
+        unoptimized
       />
-      <h3 className="font-semibold">{product.name}</h3>
-      <p className="text-red-500 font-bold">{product.price}</p>
-      <button className="w-full bg-black text-white py-2 mt-2 rounded-md text-lg font-semibold hover:bg-gray-600 transition">
-        Add To Cart
-      </button>
+      <h3 className="font-semibold text-center text-sm">{product.title}</h3>
+      <p className="text-red-500 font-bold text-center">${product.offerPrice}</p>
+      <CartButton product={product} />
     </div>
   );
 };

@@ -70,7 +70,7 @@ const Cart = () => {
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-6 max-w-5xl mx-auto py-16">
       <h1 className="text-2xl font-extrabold text-gray-800 mb-6">🛒 Your Shopping Cart</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
