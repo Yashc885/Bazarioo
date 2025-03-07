@@ -1,22 +1,34 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Plus, Pencil, ChevronRight } from "lucide-react";
-import mobile from './../../../assets/Today/mobile.jpg'
-const products = Array(30).fill({
-  _id: "1234567890abcdef", // Placeholder ID, will be fetched from DB later
-  name: "Lorem Ipsum",
-  category: "Battery",
-  price: "₹110.40",
-  description: "Lorem ipsum is placeholder text commonly used in the graphic industry. It helps to visualize content before final text is added.",
-  image: mobile ,
-});
+import axios from "axios";
 
 const ProductList = () => {
+  const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 16;
+  const fallbackImage = "/fallback.jpg"; // Ensure this image is in the public folder
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("/api/product");
+        console.log("API Response:", response.data);
+        if (response.data && Array.isArray(response.data.products)) {
+          setProducts(response.data.products);
+        } else {
+          console.error("Unexpected response format:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  console.log("Current Products State:", products);
 
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
@@ -35,22 +47,43 @@ const ProductList = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {currentProducts.map((product, index) => (
-          <div key={index} className="bg-white p-4 shadow-md rounded-lg">
-            <Image src={product.image} alt={product.name} width={100} height={100} className="mx-auto" />
-            <h3 className="mt-4 font-bold text-black">{product.name}</h3>
-            <p className="text-red-500 font-semibold">{product.category}</p>
-            <p className="text-lg font-bold text-black">{product.price}</p>
-            <p className="text-gray-600 text-sm">{product.description.split(" ").slice(0, 30).join(" ")}...</p>
-            <p className="text-xs text-gray-400 mt-2">Product ID: {product._id}</p>
-            <Link
-              href={`/superuser/updateProduct?product=${product._id}`}
-              className="mt-3 flex items-center justify-center w-full py-2 bg-red-500 text-white rounded-md shadow-md"
-            >
-              <Pencil className="w-4 h-4 mr-2" /> Update
-            </Link>
-          </div>
-        ))}
+        {currentProducts.map((product) => {
+          const productImage = Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : fallbackImage;
+          
+          return (
+            <div key={product._id} className="bg-white shadow-md rounded-lg p-4 h-full flex flex-col">
+              {/* Image with better quality */}
+              <div className="w-full h-[200px] overflow-hidden rounded-md">
+                <Image 
+                  src={productImage} 
+                  alt={product.name || "Product image"} 
+                  width={300} 
+                  height={200} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              
+              {/* Text Content */}
+              <div className="flex-grow flex flex-col ">
+                <h3 className="font-bold text-black">{product.title}</h3>
+                <p className="text-red-500 font-semibold">{product.category}</p>
+                <p className="text-lg font-bold text-black">{product.offerPrice}</p>
+                <p className="text-gray-600 text-sm min-h-[50px]">
+                  {product.description?.split(" ").slice(0, 30).join(" ")}...
+                </p>
+                <p className="text-xs text-gray-400 ">Product ID: {product._id}</p>
+              </div>
+
+              {/* Button */}
+              <Link
+                href={`/superuser/updateProduct?product=${product._id}`}
+                className="mt-3 flex items-center justify-center w-full py-2 bg-black text-white rounded-md shadow-md"
+              >
+                <Pencil className="w-4 h-4 mr-2" /> Update
+              </Link>
+            </div>
+          );
+        })}
       </div>
 
       {/* Pagination */}
