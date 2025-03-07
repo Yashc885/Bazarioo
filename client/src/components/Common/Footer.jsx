@@ -38,7 +38,7 @@ const Footer = () => {
             <li><Link href="/login" className="hover:underline">Login / Register</Link></li>
             <li><Link href="/cart" className="hover:underline">Cart</Link></li>
             <li><Link href="/wishlist" className="hover:underline">Wishlist</Link></li>
-            <li><Link href="/shop" className="hover:underline">Shop</Link></li>
+            <li><Link href="/products" className="hover:underline">Shop</Link></li>
           </ul>
         </div>
 

@@ -12,7 +12,6 @@ const Cart = () => {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    // Simulating user login session retrieval (replace with actual auth logic)
     const storedUserId = localStorage.getItem("userId") || "67b96c13ceaa5650421786bb";
     setUserId(storedUserId);
   }, []);
@@ -23,15 +22,15 @@ const Cart = () => {
     const fetchCart = async () => {
       try {
         const { data } = await axios.get(`/api/cart?userId=${userId}`);
-        setCartItems(
-          data.cart.products.map((item) => ({
-            id: item.product._id,
-            title: item.product.title || "Unnamed Product",
-            price: item.product.offerPrice,
-            quantity: item.quantity,
-            image: item.product.images?.length ? item.product.images[0] : mobile,
-          }))
-        );
+        const items = data.cart.products.map((item) => ({
+          id: item.product._id,
+          title: item.product.title || "Unnamed Product",
+          price: item.product.offerPrice,
+          quantity: item.quantity,
+          image: item.product.images?.length ? item.product.images[0] : mobile,
+        }));
+
+        setCartItems(items);
       } catch (error) {
         console.error("Error fetching cart:", error);
       }
@@ -40,18 +39,18 @@ const Cart = () => {
     fetchCart();
   }, [userId]);
 
-  // ✅ Fix: Remove entire product from DB and UI
+  // ✅ Remove product from cart and update cartQty
   const removeItem = async (id) => {
     try {
-      await axios.delete(`/api/cart?userId=${userId}&productId=${id}`); // Send as query params
-      setCartItems(cartItems.filter((item) => item.id !== id)); // Remove from UI
+      await axios.delete(`/api/cart?userId=${userId}&productId=${id}`);
+      const updatedCart = cartItems.filter((item) => item.id !== id);
+      setCartItems(updatedCart);
     } catch (error) {
       console.error("Error removing item:", error);
     }
   };
-  
 
-  // ✅ Fix: Update product quantity
+  // ✅ Update product quantity and cartQty
   const updateQuantity = async (id, newQuantity) => {
     try {
       await axios.put(`/api/cart`, {
@@ -66,6 +65,12 @@ const Cart = () => {
       console.error("Error updating quantity:", error);
     }
   };
+
+  // ✅ Calculate total cart quantity
+  useEffect(() => {
+    const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+    localStorage.setItem("cartQty", totalQuantity);
+  }, [cartItems]);
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 

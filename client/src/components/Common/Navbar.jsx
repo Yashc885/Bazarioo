@@ -13,25 +13,36 @@ import logo2 from './../../../public/logo2.png'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const [cartCount, setCartCount] = useState(2) // Example cart count
+  const [cartCount, setCartCount] = useState(0) // Initialize cart count
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
-    // Function to check login state
+    // Check login state
     const checkLoginStatus = () => {
       const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'
       setIsLoggedIn(loggedInStatus)
     }
 
-    // Initial check
-    checkLoginStatus()
+    // Fetch cart quantity from localStorage
+    const fetchCartQuantity = () => {
+      const cartQty = localStorage.getItem('cartQty')
+      setCartCount(cartQty ? parseInt(cartQty, 10) : 0)
+    }
 
-    // Listen for localStorage changes
-    window.addEventListener('storage', checkLoginStatus)
+    checkLoginStatus()
+    fetchCartQuantity()
+
+    // Listen for localStorage changes (optional, useful for real-time updates)
+    const handleStorageChange = () => {
+      checkLoginStatus()
+      fetchCartQuantity()
+    }
+
+    window.addEventListener('storage', handleStorageChange)
 
     return () => {
-      window.removeEventListener('storage', checkLoginStatus)
+      window.removeEventListener('storage', handleStorageChange)
     }
   }, [])
 
@@ -41,10 +52,10 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn')
     localStorage.removeItem('userId')
-    Cookies.remove('authToken') // Remove authentication cookie
+    Cookies.remove('authToken')
     setIsLoggedIn(false)
     setDropdownOpen(false)
-    window.location.reload() // Refresh to update UI
+    window.location.reload()
   }
 
   return (
