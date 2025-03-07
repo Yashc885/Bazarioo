@@ -2,33 +2,35 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { FaHeart } from "react-icons/fa";
 import { FiFilter } from "react-icons/fi"; // Filter Icon
 import axios from "axios";
 
 const categories = [
-  "All", "Clothing", "Beauty", "Watches", "Home", "Headphones", "Jewelleries",
-  "Shoes", "Games", "Festive", "Spiritual", "Others"
+  "All", "Clothing", "Beauty", "Watches", "Home", "Jewelleries",
+  "Festive", "Spiritual" , "Others"
 ];
 
 export default function Products() {
   const [products, setProducts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  const router = useRouter();
+  
+  // ✅ Read category from URL
+  const searchParams = useSearchParams();
+  const selectedCategory = searchParams.get("category") || "All";
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("/api/product"); // ✅ Fixed endpoint
+        const response = await axios.get("/api/product"); // ✅ Fetch products
         const data = response.data;
-        
+
         if (data && Array.isArray(data.products)) {
           setProducts(data.products);
         } else {
-          setProducts([]); // Fallback to an empty array
+          setProducts([]);
           console.error("Unexpected API response:", data);
         }
       } catch (error) {
@@ -39,15 +41,16 @@ export default function Products() {
     fetchProducts();
   }, []);
 
+  // ✅ Filtering Logic Updated (Dynamic based on URL)
   const filteredProducts = products?.filter(
     (product) =>
       (selectedCategory === "All" || product.category === selectedCategory) &&
-      product.title.toLowerCase().includes(searchTerm.toLowerCase()) // ✅ Changed from product.name to product.title
+      product.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div className="p-4 max-w-7xl mx-auto">
-      {/* 🔥 Search Bar + Filter (Hidden on Laptop, Visible on Mobile) */}
+    <div className="p-4 max-w-7xl mx-auto ">
+      {/* 🔥 Search Bar + Filter */}
       <div className="sticky top-0 bg-white z-10 p-2 shadow-md flex items-center justify-between gap-2 md:gap-4 md:hidden">
         <input
           type="text"
@@ -68,17 +71,15 @@ export default function Products() {
       <div className={`bg-white p-2 mt-2 ${showFilters ? "block" : "hidden"} md:flex md:items-center md:gap-3 md:mt-2`}>
         <div className="flex gap-3 whitespace-nowrap overflow-x-scroll scrollbar-hide md:flex-wrap md:overflow-hidden sm:pb-2">
           {categories.map((category) => (
-            <button
-              key={category}
-              className={`px-4 py-2 text-sm rounded-lg ${selectedCategory === category ? "bg-red-600 text-white" : "bg-gray-100 text-red-600"}`}
-              onClick={() => {
-                setSelectedCategory(category);
-                setShowFilters(false);
-                router.push(`/products?category=${encodeURIComponent(category)}`);
-              }}
-            >
-              {category}
-            </button>
+            <Link key={category} href={`/products?category=${encodeURIComponent(category)}`} passHref>
+              <button
+                className={`px-4 py-2 text-sm rounded-lg ${
+                  selectedCategory === category ? "bg-red-600 text-white" : "bg-gray-100 text-red-600"
+                }`}
+              >
+                {category}
+              </button>
+            </Link>
           ))}
         </div>
       </div>
@@ -87,7 +88,7 @@ export default function Products() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
-            <Link key={product._id} href={`/productDetail/${product._id}`}>
+            <Link key={product._id} href={`/productDetail/${product._id}`} passHref>
               <div className="relative border p-4 rounded-lg shadow-sm hover:shadow-md transition bg-white cursor-pointer">
                 <span className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs font-bold rounded">
                   -{product.discount}%

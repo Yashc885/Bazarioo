@@ -13,7 +13,7 @@ const Carousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   return (
-    <div className="w-full max-w-screen-lg mx-auto p-8">
+    <div className="w-full max-w-screen-lg mx-auto p-8 py-12 lg:py-16">
       {/* Box Container */}
       <div className="relative w-full h-[250px] md:h-[300px] shadow-xl overflow-hidden bg-gray-100">
         {/* Slider Wrapper */}
