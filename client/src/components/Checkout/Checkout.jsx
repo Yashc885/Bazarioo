@@ -2,13 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { FaRegCreditCard, FaTrash } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import Link from "next/link";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
   const [userId, setUserId] = useState(null);
+  const router = useRouter(); // Next.js router for redirection
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId") || "67b96c13ceaa5650421786bb";
@@ -17,7 +19,6 @@ const Checkout = () => {
 
   useEffect(() => {
     if (!userId) return;
-    
     const fetchCart = async () => {
       try {
         const { data } = await axios.get(`/api/cart?userId=${userId}`);
@@ -34,7 +35,6 @@ const Checkout = () => {
         console.error("Error fetching cart:", error);
       }
     };
-    
     fetchCart();
   }, [userId]);
 
@@ -51,22 +51,48 @@ const Checkout = () => {
   const shipping = "Free";
   const total = subtotal;
 
+  const handlePlaceOrder = async () => {
+    if (cartItems.length === 0) {
+      alert("Your cart is empty!");
+      return;
+    }
+  
+    const orderData = {
+      userId,
+      items: cartItems.map(item => ({
+        productId: item.id, // Yeh fix hai, "product" nahi, "productId" bhejna tha
+        quantity: item.quantity,
+        price: item.offerPrice,
+      })),
+      totalAmount: subtotal, // Yeh already sahi hai
+    };
+  
+    try {
+      const response = await axios.post("/api/booking", orderData);
+      if (response.status === 200) {
+        alert("Order placed successfully!");
+        window.location.href = "/successful"; // Redirect after order placement
+      }
+    } catch (error) {
+      console.error("Order Placement Error:", error);
+      alert("Failed to place order. Please try again.");
+    }
+  };
+  
+  
+
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      {/* Breadcrumb Navigation */}
+    <div className="max-w-6xl mx-auto p-6 bg-gray-100 min-h-screen">
       <nav className="text-gray-500 text-sm mb-4">
         <Link href="/account" className="hover:text-black">My Account</Link> /
         <Link href="/product" className="hover:text-black"> Product</Link> /
         <Link href="/cart" className="hover:text-black"> Cart</Link> /
         <span className="text-black font-semibold"> CheckOut</span>
       </nav>
-
-      <h1 className="text-2xl font-extrabold text-gray-800 mb-6">Billing Details</h1>
-
+      <h1 className="text-2xl font-extrabold text-gray-800 mb-6 text-center">Billing Details</h1>
       <div className="grid md:grid-cols-2 gap-12">
-        {/* Left - Billing Form */}
         <div>
-          <form className="space-y-4">
+          <form className="space-y-4 bg-white p-6 shadow-lg rounded-md">
             {["First Name", "Street Address", "Town/City", "State", "Pincode", "Phone Number", "Email Address"].map((label, index) => (
               <div key={index}>
                 <label className="block font-semibold">{label}*</label>
@@ -79,23 +105,21 @@ const Checkout = () => {
             ))}
           </form>
         </div>
-
-        {/* Right - Cart Summary */}
         <div className="bg-white p-6 shadow-lg rounded-lg">
           <table className="w-full border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
-                <th className="text-left p-3 border border-gray-300">Product</th>
-                <th className="text-center p-3 border border-gray-300">Quantity</th>
-                <th className="text-center p-3 border border-gray-300">Price</th>
-                <th className="text-center p-3 border border-gray-300">Actions</th>
+                <th className="text-left p-3 border">Product</th>
+                <th className="text-center p-3 border">Quantity</th>
+                <th className="text-center p-3 border">Price</th>
+                <th className="text-center p-3 border">Actions</th>
               </tr>
             </thead>
             <tbody>
               {cartItems.map((item) => (
                 <tr key={item.id} className="border border-gray-300">
                   <td className="flex items-center gap-3 p-3">
-                    <Image src={item.image} alt={item.title} width={50} height={50} className="rounded-lg border border-gray-300" />
+                    <Image src={item.image} alt={item.title} width={50} height={50} className="rounded-lg border" />
                     <span className="font-medium">{item.title}</span>
                   </td>
                   <td className="text-center p-3">
@@ -115,7 +139,6 @@ const Checkout = () => {
               ))}
             </tbody>
           </table>
-
           <div className="mt-6 space-y-2 text-lg border-t pt-4">
             <div className="flex justify-between">
               <span>Subtotal:</span>
@@ -131,8 +154,10 @@ const Checkout = () => {
               <span>₹{total}</span>
             </div>
           </div>
-
-          <button className="w-full bg-red-500 text-white px-6 py-3 mt-6 rounded-md hover:bg-red-600 text-lg">
+          <button 
+            onClick={handlePlaceOrder} 
+            className="w-full bg-red-500 text-white px-6 py-3 mt-6 rounded-md hover:bg-red-600 text-lg transition-all transform hover:scale-105 shadow-lg"
+          >
             Place Order
           </button>
         </div>
