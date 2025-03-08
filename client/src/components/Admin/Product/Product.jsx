@@ -2,11 +2,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Pencil, ChevronRight } from "lucide-react";
+import { Plus, Pencil, ChevronRight, Search } from "lucide-react";
 import axios from "axios";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 16;
   const fallbackImage = "/fallback.jpg"; // Ensure this image is in the public folder
@@ -30,10 +31,14 @@ const ProductList = () => {
 
   console.log("Current Products State:", products);
 
+  const filteredProducts = products.filter((product) =>
+    product.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
-  const totalPages = Math.ceil(products.length / productsPerPage);
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -44,6 +49,18 @@ const ProductList = () => {
           className="flex items-center px-4 py-2 bg-black text-white rounded-md shadow-md">
           <Plus className="w-5 h-5 mr-2" /> Add New Product
         </Link>
+      </div>
+
+      {/* Search Box */}
+      <div className="mb-6 flex items-center bg-white shadow-md p-3 rounded-md">
+        <Search className="w-5 h-5 text-gray-500 mr-2" />
+        <input 
+          type="text" 
+          placeholder="Search by title..." 
+          value={searchTerm} 
+          onChange={(e) => setSearchTerm(e.target.value)} 
+          className="w-full p-2 outline-none"
+        />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

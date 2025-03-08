@@ -69,18 +69,18 @@ export async function POST(req: NextRequest) {
   }
 
 // GET: Fetch user's bookings
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(req: NextRequest) {
   await connect();
   try {
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("userId");
+    // Fetch all orders without filtering by adminId
+    const bookings = await Booking.find().populate("items.product");
 
-    if (!userId) return NextResponse.json({ message: "User ID is required" }, { status: 400 });
+    if (!bookings.length) {
+      return NextResponse.json({ message: "No bookings found" }, { status: 404 });
+    }
 
-    const bookings = await Booking.find({ user: userId }).populate("items.product");
-    if (!bookings.length) return NextResponse.json({ message: "No bookings found" }, { status: 404 });
-
-    return NextResponse.json({ bookings });
+    return NextResponse.json({ bookings }, { status: 200 });
   } catch (error) {
     console.error("Fetch Booking Error:", error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
